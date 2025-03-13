@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador de Gastos de Parto</title>
+    <style>
+        /* ... (your CSS styles remain unchanged) ... */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 95%;
+            margin: 10px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #003473;
+            text-align: center;
+        }
+
+        h2 {
+            color: #425500;
+        }
+
+        h4 {
+            color: #425500;
+            box-shadow: 0 2px rgba(66, 85, 0, .4);
+        }
+
+        .section-title {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #eee;
+            border-radius: 8px;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .section-title::after {
+            content: '▶';
+            font-size: 1.2em;
+        }
+
+        .section-title.active::after {
+            content: '▼';
+        }
+
+        .section-content {
+            padding: 0 15px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+
+        .section-content.active {
+            max-height: 1000px;
+            /* Or whatever maximum height you expect */
+            padding-bottom: 10px;
+            overflow: auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #003473;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 60%;
+            font-size: large;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+
+        .result-item {
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .insurer-pays {
+            background-color: #e6ffe6;
+            /* Light green */
+            border: 1px solid #aaffaa;
+        }
+
+        .insured-pays {
+            background-color: #ffe6e6;
+            /* Light red */
+            border: 1px solid #ffaaaa;
+        }
+
+        .disclaimer {
+            font-size: 0.8em;
+            color: #666;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Simulador Rápido e Informal de Gastos y Cobertura de Partos</h1>
+    <h2>Quantum, corredores y asesores de seguros</h2>
+
+    <div class="container">
+        <h3 class="section-title">🤰 Condiciones Generales</h3>
+        <div class="section-content">
+            <label for="lugarParto">Lugar de Parto:</label>
+            <select id="lugarParto">
+                <option value="local">Local</option>
+                <option value="eeuu">En Estados Unidos</option>
+            </select>
+
+            <label for="tipoParto">Tipo de Parto:</label>
+            <select id="tipoParto">
+                <option value="natural">Natural</option>
+                <option value="cesarea">Cesárea</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="container">
+        <h3 class="section-title">💵 Gastos y Coberturas</h3>
+        <div class="section-content">
+            <h4>Honorarios de Profesionales de la Salud</h4>
+            <label for="ginecologo">Ginecólogo/Obstetra:</label>
+            <input type="number" id="ginecologo" value="50000">
+            <label for="ayudanteGinecologo">Ayudante Ginecólogo/Obstetra:</label>
+            <input type="number" id="ayudanteGinecologo" value="15000">
+            <label for="pediatra">Pediatra:</label>
+            <input type="number" id="pediatra" value="10000">
+            <label for="anestesiologo">Anestesiólogo:</label>
+            <input type="number" id="anestesiologo" value="20000">
+            <label for="otrosProfesionales">Otros Profesionales:</label>
+            <input type="number" id="otrosProfesionales" value="5000">
+
+            <h4>Servicios Hospitalarios</h4>
+            <label for="habitacionStandard">Habitación Standard:</label>
+            <input type="number" id="habitacionStandard" value="10000">
+            <label for="habitacionLujo">Habitación de Lujo:</label>
+            <input type="number" id="habitacionLujo" value="20000">
+            <label for="cargosAdicionalesHabitacion">Cargos Adicionales en Habitación:</label>
+            <input type="number" id="cargosAdicionalesHabitacion" value="2000">
+            <label for="salaRecuperacion">Sala de Recuperación:</label>
+            <input type="number" id="salaRecuperacion" value="5000">
+            <label for="salaParto">Sala de Parto:</label>
+            <input type="number" id="salaParto" value="10000">
+            <label for="salaCirugia">Sala de Cirugía:</label>
+            <input type="number" id="salaCirugia" value="25000">
+            <label for="equipos">Equipos:</label>
+            <input type="number" id="equipos" value="5000">
+            <label for="cuidadosIntensivos">Cuidados Intensivos Neonatales e Incubadora:</label>
+            <input type="number" id="cuidadosIntensivos" value="30000">
+            <label for="serviciosConfort">Servicios de Confort y Opcionales</label>
+            <input type="number" id="serviciosConfort" value="5000">
+            <label for="procedimientosNoNecesarios">Procedimientos No Médicamente Necesarios</label>
+            <input type="number" id="procedimientosNoNecesarios" value="0">
+            <label for="TratamientosExperimentales">Tratamientos Experimentales o No Aprobados</label>
+            <input type="number" id="TratamientosExperimentales" value="0">
+            <h4>Medicamentos y Suministros</h4>
+            <label for="medicamentos">Medicamentos:</label>
+            <input type="number" id="medicamentos" value="5000">
+            <label for="suministros">Suministros Médicos y Material Gastable:</label>
+            <input type="number" id="suministros" value="3000">
+
+            <h4>Servicios Adicionales</h4>
+             <label for="ComplicacionesMaternidad">Complicaciones de la Maternidad:</label>
+            <input type="number" id="ComplicacionesMaternidad" value="50000">
+            <label for="monitoreoFetal">Monitoreo Fetal Premium:</label>
+            <input type="number" id="monitoreoFetal" value="0">
+            <label for="sangre">Sangre:</label>
+            <input type="number" id="sangre" value="10000">
+            <label for="enfermeriaPrivada">Asistencia de Enfermería Privada:</label>
+            <input type="number" id="enfermeriaPrivada" value="0">
+            <label for="procedimientosDiagnostico">Procedimientos de Diagnóstico:</label>
+            <input type="number" id="procedimientosDiagnostico" value="5000">
+            <label for="pruebasLaboratorio">Pruebas de Laboratorio:</label>
+            <input type="number" id="pruebasLaboratorio" value="2000">
+            <label for="biopsiaPlacenta">Biopsia de Placenta:</label>
+            <input type="number" id="biopsiaPlacenta" value="0">
+            <label for="recoleccionCelulas">Recolección Células Madres</label>
+            <input type="number" id="recoleccionCelulas" value="0">
+            <label for="otrosServicios">Otros Servicios Adicionales:</label>
+            <input type="number" id="otrosServicios" value="5000">
+
+            <h4>Gastos del Recien Nacido</h4>
+            <label for="medicamentosRecienNacido">Medicamentos:</label>
+            <input type="number" id="medicamentosRecienNacido" value="2000">
+            <label for="materialGastableRecienNacido">Material Gastable:</label>
+            <input type="number" id="materialGastableRecienNacido" value="1000">
+            <label for="salaRecienNacidos">Sala Recién Nacidos:</label>
+            <input type="number" id="salaRecienNacidos" value="5000">
+            <label for="incubadoraRecienNacido">Incubadora:</label>
+            <input type="number" id="incubadoraRecienNacido" value="15000">
+            <label for="rayosXRecienNacido">Rayos X:</label>
+            <input type="number" id="rayosXRecienNacido" value="3000">
+            <label for="screeningNeonatal">Screening Neonatal y Estudios Comunes:</label>
+            <input type="number" id="screeningNeonatal" value="2000">
+            <label for="estudiosEspeciales">Estudios Especiales:</label>
+            <input type="number" id="estudiosEspeciales" value="5000">
+            <label for="oxigenoRecienNacido">Oxígeno:</label>
+            <input type="number" id="oxigenoRecienNacido" value="1000">
+            <label for="condicionesCongenitas">Condiciones Congénitas:</label>
+            <input type="number" id="condicionesCongenitas" value="50000">
+             <label for="ComplicacionesNeonatales">Complicaciones Neonatales:</label>
+            <input type="number" id="ComplicacionesNeonatales" value="50000">
+        </div>
+    </div>
+
+    <div class="container">
+        <h3 class="section-title">📊 Valores Generales de Cada Plan</h3>
+        <div class="section-content">
+            <h4>🛡️ Plan 1</h4>
+            <label for="aseguradora1">Aseguradora:</label>
+            <input type="text" id="aseguradora1" value="Aseguradora A">
+            <label for="plan1">Plan:</label>
+            <input type="text" id="plan1" value="Plan Básico">
+            <label for="limite1">Límite Total de Cobertura:</label>
+            <input type="number" id="limite1" value="1000000">
+            <label for="deducible1">Deducible:</label>
+            <input type="number" id="deducible1" value="10000">
+            <label for="copago1">Copago:</label>
+            <input type="number" id="copago1" value="5000">
+            <label for="coaseguro1">Coaseguro:</label>
+            <input type="number" id="coaseguro1" value="0.10" step="0.01">
+            <h4>🛡️ Plan 2</h4>
+            <label for="aseguradora2">Aseguradora:</label>
+            <input type="text" id="aseguradora2" value="Aseguradora B">
+            <label for="plan2">Plan:</label>
+            <input type="text" id="plan2" value="Plan Intermedio">
+            <label for="limite2">Límite Total de Cobertura:</label>
+            <input type="number" id="limite2" value="2000000">
+            <label for="deducible2">Deducible:</label>
+            <input type="number" id="deducible2" value="5000">
+            <label for="copago2">Copago:</label>
+            <input type="number" id="copago2" value="2500">
+            <label for="coaseguro2">Coaseguro:</label>
+            <input type="number" id="coaseguro2" value="0.05" step="0.01">
+
+            <h4>🛡️ Plan 3</h4>
+            <label for="aseguradora3">Aseguradora:</label>
+            <input type="text" id="aseguradora3" value="Aseguradora C">
+            <label for="plan3">Plan:</label>
+            <input type="text" id="plan3" value="Plan Premium">
+            <label for="limite3">Límite Total de Cobertura:</label>
+            <input type="number" id="limite3" value="5000000">
+            <label for="deducible3">Deducible:</label>
+            <input type="number" id="deducible3" value="0">
+            <label for="copago3">Copago:</label>
+            <input type="number" id="copago3" value="0">
+            <label for="coaseguro3">Coaseguro:</label>
+            <input type="number" id="coaseguro3" value="0" step="0.01">
+        </div>
+    </div>
+
+
+    <div class="container">
+        <h3 class="section-title">📑 Valores de cada Gasto y Cobertura en cada Plan</h3>
+        <div class="section-content">
+
+            <h4>🛡️ Plan 1: <span id="plan1_details"></span></h4>
+            <div id="plan1_coverage"></div>
+
+            <h4>🛡️ Plan 2: <span id="plan2_details"></span></h4>
+            <div id="plan2_coverage"></div>
+
+            <h4>🛡️ Plan 3: <span id="plan3_details"></span></h4>
+            <div id="plan3_coverage"></div>
+        </div>
+    </div>
+
+
+    <div class="container" style="text-align: center;">
+        <button onclick="calcularGastos()">🧮Calcular Gastos</button>
+    </div>
+
+    <div class="container">
+        <h3 class="section-title">🔄️ Resultados</h3>
+        <div class="section-content" id="resultados">
+        </div>
+    </div>
+
+
+    <div class="container">
+        <h3 class="section-title">🚫 Exclusiones Comunes</h3>
+        <div class="section-content">
+            <p><b>Servicios de Comfort y Opcionales</b></p>
+            <ul>
+                <li>Estancia Hospitalaria de Lujo y Suites</li>
+                <li>Comidas Especiales</li>
+                <li>Telecomunicación</li>
+                <li>Personal Médico Adicional y Ayudantes</li>
+            </ul>
+
+            <p><b>Procedimientos No Médicamente Necesarios</b></p>
+            <ul>
+                <li>Inducción del parto por conveniencia</li>
+                <li>Cesárea electiva sin indicación médica</li>
+                <li>Asistencia de Enfermería privada o personal</li>
+                <li>Comadronas y Doulas</li>
+                <li>Preparación de plan de parto</li>
+                <li>Anestesia adicional o especial</li>
+                <li>Procedimientos cosméticos como corrección de cicatrices</li>
+                <li>Servicios de lactancia no afiliados al hospital</li>
+                <li>Tratamientos estéticos postnatales como masajes y tratamientos faciales</li>
+                <li>Circuncisión excepto por indicación médica</li>
+                <li>Recolección Células Madres</li>
+                <li>Monitoreo Fetal Premium</li>
+                <li>Procedimientos de Diagnóstico</li>
+                <li>Biopsia de Placenta</li>
+                <li>Preservación células madres</li>
+                <li>Precondiciones de la madre</li>
+                <li>Otros Procedimientos</li>
+            </ul>
+
+             <p><b>Tratamientos Experimentales o No Aprobados</b></p>
+            <ul>
+                <li>Acupuntura, Aromaterapia, hipnosis</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container disclaimer">
+        <p>Este simulador tiene fines exclusivamente educativos e informativos. Los resultados generados son estimaciones
+            teóricas basadas en supuestos generales y no constituyen asesoramiento profesional. Quantum, corredores y
+            asesores de seguros, no garantiza la exactitud, integridad o idoneidad de la información proporcionada. Las
+            coberturas, límites, deducibles y exclusiones reales pueden variar según las condiciones particulares de cada
+            póliza y las circunstancias específicas de cada evento. La determinación final de beneficios es
+            responsabilidad exclusiva de la aseguradora correspondiente conforme a los términos y condiciones
+            contractuales. Se recomienda encarecidamente consultar con un profesional calificado en seguros antes de
+            tomar cualquier decisión relacionada con la adquisición o modificación de pólizas de seguro. Al utilizar este
+            simulador, usted reconoce y acepta que Quantum no será responsable por cualquier pérdida o daño derivado del
+            uso o dependencia de la información proporcionada.</p>
+    </div>
+
+    <footer>
+        © 2025 Quantum, corredores y asesores de seguro | www.quantum.com.do | (809)701-6406 | info@quantum.com.do
+    </footer>
+
+    <script>
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-DO', { style: 'currency', currency: 'DOP' }).format(amount);
+        }
+
+       // Function to toggle section visibility
+        function toggleSection(sectionTitle) {
+            sectionTitle.classList.toggle('active');
+            const content = sectionTitle.nextElementSibling;
+            content.classList.toggle('active');
+        }
+
+        // Add click event to section titles
+        const sectionTitles = document.querySelectorAll('.section-title');
+        sectionTitles.forEach(title => {
+            title.addEventListener('click', () => toggleSection(title));
+        });
+
+        // Get all input elements for gastos
+        const gastosInputs = {
+            ginecologo: "Ginecólogo/Obstetra",
+            ayudanteGinecologo: "Ayudante Ginecólogo/Obstetra",
+            pediatra: "Pediatra",
+            anestesiologo: "Anestesiólogo",
+            otrosProfesionales: "Otros Profesionales",
+            habitacionStandard: "Habitación Standard",
+            habitacionLujo: "Habitación de Lujo",
+            cargosAdicionalesHabitacion: "Cargos Adicionales en Habitación",
+            salaRecuperacion: "Sala de Recuperación",
+            salaParto: "Sala de Parto",
+            salaCirugia: "Sala de Cirugía",
+            equipos: "Equipos",
+            cuidadosIntensivos: "Cuidados Intensivos Neonatales e Incubadora",
+            serviciosConfort: "Servicios de Confort y Opcionales",
+            procedimientosNoNecesarios: "Procedimientos No Médicamente Necesarios",
+            TratamientosExperimentales: "Tratamientos Experimentales o No Aprobados",
+            medicamentos: "Medicamentos",
+            suministros: "Suministros Médicos y Material Gastable",
+            ComplicacionesMaternidad: "Complicaciones de la Maternidad",
+            monitoreoFetal: "Monitoreo Fetal Premium",
+            sangre: "Sangre",
+            enfermeriaPrivada: "Asistencia de Enfermería Privada",
+            procedimientosDiagnostico: "Procedimientos de Diagnóstico",
+            pruebasLaboratorio: "Pruebas de Laboratorio",
+            biopsiaPlacenta: "Biopsia de Placenta",
+            recoleccionCelulas: "Recolección Células Madres",
+            otrosServicios: "Otros Servicios Adicionales",
+            medicamentosRecienNacido: "Medicamentos (Recien Nacido)",
+            materialGastableRecienNacido: "Material Gastable (Recien Nacido)",
+            salaRecienNacidos: "Sala Recién Nacidos",
+            incubadoraRecienNacido: "Incubadora (Recien Nacido)",
+            rayosXRecienNacido: "Rayos X (Recien Nacido)",
+            screeningNeonatal: "Screening Neonatal y Estudios Comunes",
+            estudiosEspeciales: "Estudios Especiales (Recien Nacido)",
+            oxigenoRecienNacido: "Oxígeno (Recien Nacido)",
+            condicionesCongenitas: "Condiciones Congénitas",
+            ComplicacionesNeonatales: "Complicaciones Neonatales"
+
+        };
+
+        // Function to create coverage inputs for each plan
+        function createCoverageInputs(planNumber) {
+            const planCoverageDiv = document.getElementById(`plan${planNumber}_coverage`);
+            for (const [key, label] of Object.entries(gastosInputs)) {
+                const container = document.createElement('div');
+                container.innerHTML = `
+                    <label>${label} (Plan ${planNumber}):</label>
+                    <label>Cubierto: <input type="checkbox" id="${key}_cubierto${planNumber}" checked></label>
+                    <label>Sub-Límite: <input type="number" id="${key}_sublimite${planNumber}" value="0"></label>
+                    <label>Deducible: <input type="number" id="${key}_deducible${planNumber}" value="0"></label>
+                    <label>Copago: <input type="number" id="${key}_copago${planNumber}" value="0"></label>
+                    <label>Coaseguro: <input type="number" id="${key}_coaseguro${planNumber}" value="0" step="0.01"></label>
+                `;
+                planCoverageDiv.appendChild(container);
+            }
+
+             //Update Plan Details on load:
+             document.getElementById(`plan${planNumber}_details`).textContent = `${document.getElementById('aseguradora' + planNumber).value} - ${document.getElementById('plan' + planNumber).value}`;
+        }
+
+        // Create inputs for all 3 plans
+        createCoverageInputs(1);
+        createCoverageInputs(2);
+        createCoverageInputs(3);
+
+        function calcularGastos() {
+            const lugarParto = document.getElementById('lugarParto').value;
+            const tipoParto = document.getElementById('tipoParto').value;
+
+            let resultadosHTML = '<h3>📊 Comparación de Planes:</h3>';
+
+            for (let planNumber = 1; planNumber <= 3; planNumber++) {
+                let costoTotal = 0;
+
+                // Sum up all gastos
+                for (const key in gastosInputs) {
+                    costoTotal += parseFloat(document.getElementById(key).value) || 0;
+                }
+
+                let montoCubierto = 0;
+                let deduciblePagar = parseFloat(document.getElementById(`deducible${planNumber}`).value) || 0;
+                let copagoPagar = parseFloat(document.getElementById(`copago${planNumber}`).value) || 0;
+                let coaseguro = parseFloat(document.getElementById(`coaseguro${planNumber}`).value) || 0;
+                let limiteCobertura = parseFloat(document.getElementById(`limite${planNumber}`).value) || 0;
+
+                // Calculate coverage based on individual item coverage
+                for (const key in gastosInputs) {
+                    const cubierto = document.getElementById(`${key}_cubierto${planNumber}`).checked;
+                    const sublimite = parseFloat(document.getElementById(`${key}_sublimite${planNumber}`).value) || Infinity;
+                    const deducible = parseFloat(document.getElementById(`${key}_deducible${planNumber}`).value) || 0;
+                    const copago = parseFloat(document.getElementById(`${key}_copago${planNumber}`).value) || 0;
+                    const coaseguroItem = parseFloat(document.getElementById(`${key}_coaseguro${planNumber}`).value) || 0;
+                    const gasto = parseFloat(document.getElementById(key).value) || 0;
+
+                    if (cubierto) {
+                        let montoCubiertoItem = Math.min(gasto, sublimite);  // Apply sublimit
+
+                        // Deductibles and Copays:
+                        let deducibleAAplicar = Math.min(deducible, montoCubiertoItem);
+                        montoCubiertoItem -= deducibleAAplicar;
+                        deduciblePagar -= deducibleAAplicar;
+                        deduciblePagar = Math.max(0, deduciblePagar);  // Deducible cannot be negative
+
+                        let copagoAAplicar = Math.min(copago, montoCubiertoItem);
+                        montoCubiertoItem -= copagoAAplicar;
+                        copagoPagar -= copagoAAplicar;
+                        copagoPagar = Math.max(0, copagoPagar);  // Copago cannot be negative
+
+                        let montoDespuesCoaseguro = montoCubiertoItem * (1 - coaseguroItem);  // Apply Coinsurance by item
+                        montoCubierto += montoDespuesCoaseguro;
+                    }
+                }
+
+                // Apply General Deductible, Copay and Coinsurance:
+                let montoDespuesDeducible = Math.max(0, montoCubierto - deduciblePagar);  // Apply remaining deductible, if any.
+                let montoDespuesCopago = Math.max(0, montoDespuesDeducible - copagoPagar);  // Apply remaining Copago, if any.
+                let montoDespuesCoaseguro = montoDespuesCopago * (1 - coaseguro);  // Apply remaining Coinsurance, if any.
+
+                // Apply coverage limit
+                let montoFinalCubierto = Math.min(montoDespuesCoaseguro, limiteCobertura);
+
+                let montoPagarAseguradora = montoFinalCubierto;
+                let montoPagarAsegurado = costoTotal - montoPagarAseguradora;
+
+                resultadosHTML += `
+                    <div class="result-container">
+                        <h4>🛡️${document.getElementById('aseguradora' + planNumber).value} - ${document.getElementById('plan' + planNumber).value}</h4>
+                        <div class="result-item">💰 Costo Total: ${formatCurrency(costoTotal)}</div>
+                        <div class="result-item">🪙 Monto Cubierto (antes de deducible, copago y coaseguro): ${formatCurrency(montoCubierto)}</div>
+                        <div class="result-item">🫰 Deducible a Pagar: ${formatCurrency(deduciblePagar)}</div>
+                        <div class="result-item">🫰 Copago a Pagar: ${formatCurrency(copagoPagar)}</div>
+                        <div class="result-item">🤝 Cubierto por Coaseguro: ${formatCurrency(montoDespuesCopago - montoDespuesCoaseguro)}</div>
+                        <div class="result-item insurer-pays">✅ A Pagar por la Aseguradora: ${formatCurrency(montoPagarAseguradora)}</div>
+                        <div class="result-item insured-pays">💸 A Pagar por el Asegurado: ${formatCurrency(montoPagarAsegurado)}</div>
+                    </div>
+                `;
+            }
+
+            // Set the HTML *first*
+            document.getElementById('resultados').innerHTML = resultadosHTML;
+
+            // *Now* find the elements and add the 'active' class.
+            const resultadosSectionTitle = document.querySelector('.container:has(#resultados) .section-title');
+            const resultadosSectionContent = document.querySelector('#resultados');
+
+            if (resultadosSectionTitle) {
+                resultadosSectionTitle.classList.add('active');
+            }
+            if (resultadosSectionContent) {
+                resultadosSectionContent.classList.add('active');
+            }
+        }
+
+    </script>
+</body>
+
+</html>                    
